@@ -4,15 +4,14 @@
   "icons": [
     {
       "src": "icon.png",
-      "sizes": "512x512",
       "type": "image/png",
+      "sizes": "512x512",
       "purpose": "any maskable"
     }
   ],
   "start_url": "./index.html",
-  "background_color": "#f8f9fa",
+  "background_color": "#ffffff",
   "display": "standalone",
   "scope": "./",
-  "theme_color": "#007bff"
-
+  "theme_color": "#ffffff"
 }
