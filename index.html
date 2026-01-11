@@ -5,39 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zpěvník</title>
     <style>
-        :root { --size: 1.1rem; }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; padding: 15px; background: #fafafa; color: #222; margin: 0; }
+        :root { 
+            --size: 1.1rem; 
+            --bg: #fafafa; --card: white; --text: #222; --border: #ddd; 
+        }
+        /* Definice Dark Mode barev */
+        body.dark-mode { 
+            --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --border: #333; 
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; padding: 15px; background: var(--bg); color: var(--text); margin: 0; transition: background 0.3s; }
         .container { max-width: 700px; margin: 0 auto; }
         
-        .header-controls { position: sticky; top: 0; background: #fafafa; padding: 10px 0; display: flex; gap: 10px; }
-        input { flex-grow: 1; padding: 12px; font-size: 1.2rem; border: 2px solid #ddd; border-radius: 10px; outline: none; }
-        input:focus { border-color: #007bff; }
-        
-        .zoom-controls { display: flex; gap: 5px; }
-        button { padding: 10px 15px; font-size: 1.2rem; cursor: pointer; border: none; background: #eee; border-radius: 8px; }
-        button:active { background: #ccc; }
-
-        #vysledek { margin-top: 20px; background: white; padding: 25px; border-radius: 15px; shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 80vh; }
-        h2 { margin-top: 0; font-size: 1.5rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; color: #000; }
-        pre { 
-            white-space: pre-wrap; 
-            font-size: var(--size); 
-            line-height: 1.6; 
-            font-family: inherit; 
-            margin-top: 15px;
-            color: #333;
+        .header-controls { 
+            position: sticky; top: 0; background: var(--bg); padding: 10px 0; 
+            display: flex; gap: 8px; align-items: center; z-index: 100;
         }
+
+        /* Styl pro výběr zpěvníku */
+        select { 
+            padding: 12px; font-size: 1rem; border: 2px solid var(--border); 
+            border-radius: 10px; background: var(--card); color: var(--text); outline: none;
+        }
+
+        input { 
+            flex-grow: 1; padding: 12px; font-size: 1.2rem; border: 2px solid var(--border); 
+            border-radius: 10px; outline: none; background: var(--card); color: var(--text);
+        }
+        
+        button { 
+            padding: 10px 12px; font-size: 1.1rem; cursor: pointer; border: none; 
+            background: var(--border); color: var(--text); border-radius: 8px; 
+        }
+
+        #vysledek { 
+            margin-top: 20px; background: var(--card); padding: 25px; 
+            border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 80vh; 
+        }
+        h2 { margin-top: 0; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+        pre { white-space: pre-wrap; font-size: var(--size); line-height: 1.6; font-family: inherit; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header-controls">
-        <input type="number" id="cislo" placeholder="Číslo písně..." oninput="hledej()" autofocus>
-        <div class="zoom-controls">
-            <button onclick="zoom(-0.1)">A-</button>
-            <button onclick="zoom(0.1)">A+</button>
-        </div>
+        <select id="songbookSelect" onchange="hledej()">
+            <option value="1">Zpivejme Hospodinu</option>
+            <option value="3">Sionsky</option>
+            </select>
+
+        <input type="number" id="cislo" placeholder="Číslo..." oninput="hledej()" autofocus>
+        
+        <button onclick="zoom(-0.1)">A-</button>
+        <button onclick="zoom(0.1)">A+</button>
+        <button onclick="toggleDarkMode()" id="darkBtn">🌙</button>
     </div>
     
     <div id="vysledek" style="display: none;">
@@ -50,16 +72,29 @@
 <script>
     let fontSize = 1.1;
 
+    // Funkce pro Dark Mode
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        document.getElementById('darkBtn').innerText = isDark ? '☀️' : '🌙';
+        localStorage.setItem('darkMode', isDark); // Zapamatuje si volbu
+    }
+
+    // Načtení preferencí při startu
+    if (localStorage.getItem('darkMode') === 'true') toggleDarkMode();
+
     function hledej() {
         const hledaneCislo = document.getElementById('cislo').value;
+        const zvolenyZpevnik = document.getElementById('songbookSelect').value;
         const panel = document.getElementById('vysledek');
-        const pisen = seznamPisni.find(p => p.number == hledaneCislo);
+
+        // Hledání podle čísla písně A ZÁROVEŇ podle ID zpěvníku
+        const pisen = seznamPisni.find(p => p.number == hledaneCislo && p.idSongbook == zvolenyZpevnik);
 
         if (pisen) {
             document.getElementById('nazev').innerText = pisen.title;
             document.getElementById('text').innerText = pisen.text;
             panel.style.display = 'block';
-            window.scrollTo(0,0);
         } else {
             panel.style.display = 'none';
         }
@@ -67,8 +102,7 @@
 
     function zoom(delta) {
         fontSize += delta;
-        if (fontSize < 0.7) fontSize = 0.7;
-        if (fontSize > 2.5) fontSize = 2.5;
+        fontSize = Math.min(Math.max(fontSize, 0.7), 2.5);
         document.documentElement.style.setProperty('--size', fontSize + 'rem');
     }
 </script>
