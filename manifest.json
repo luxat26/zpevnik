@@ -1,0 +1,17 @@
+{
+  "short_name": "Zpěvník",
+  "name": "Můj Zpěvník PWA",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3844/3844720.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#f8f9fa",
+  "display": "standalone",
+  "scope": "./",
+  "theme_color": "#007bff"
+}
