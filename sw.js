@@ -1,14 +1,17 @@
-const cacheName = 'zpevnik-v1';
+const cacheName = 'zpevnik-v2'; // Změněno na v2 pro vynucení aktualizace
 const assets = [
   './',
   './index.html',
-  './data.js'
+  './data.js',
+  './manifest.json',
+  './icon.png'
 ];
 
 // Instalace - uložení souborů do cache
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(cacheName).then(cache => {
+      console.log('Caching assets...');
       return cache.addAll(assets);
     })
   );
