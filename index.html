@@ -138,5 +138,14 @@
     }
 </script>
 
+<script>
+// Registrace Service Workeru pro offline režim
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js')
+    .then(() => console.log("Zpěvník je připraven k offline použití."))
+    .catch(err => console.log("Chyba Service Workeru:", err));
+}
+</script>
 </body>
 </html>
+
