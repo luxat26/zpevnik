@@ -109,17 +109,17 @@
     let fontSize = 1.1;
 
     function toggleDarkMode() {
-        document.body.classList.toggle('dark-mode');
-        const isDark = document.body.classList.contains('dark-mode');
-        const btn = document.getElementById('darkBtn');
-        if (btn) btn.innerText = isDark ? '☀️' : '🌙';
-        localStorage.setItem('darkMode', isDark);
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    
+    // Tohle změní barvu horní lišty systému (hodiny, signál)
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', isDark ? '#000000' : '#ffffff');
     }
-
-    if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
-        const btn = document.getElementById('darkBtn');
-        if (btn) btn.innerText = '☀️';
+    
+    document.getElementById('darkBtn').innerText = isDark ? '☀️' : '🌙';
+    localStorage.setItem('darkMode', isDark);
     }
 
     function hledej() {
@@ -172,4 +172,5 @@
 
 </body>
 </html>
+
 
