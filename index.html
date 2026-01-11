@@ -9,7 +9,6 @@
             --size: 1.1rem; 
             --bg: #fafafa; --card: white; --text: #222; --border: #ddd; 
         }
-        /* Definice Dark Mode barev */
         body.dark-mode { 
             --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --border: #333; 
         }
@@ -22,7 +21,6 @@
             display: flex; gap: 8px; align-items: center; z-index: 100;
         }
 
-        /* Styl pro výběr zpěvníku */
         select { 
             padding: 12px; font-size: 1rem; border: 2px solid var(--border); 
             border-radius: 10px; background: var(--card); color: var(--text); outline: none;
@@ -53,7 +51,7 @@
         <select id="songbookSelect" onchange="hledej()">
             <option value="2">Zpivejme Hospodinu</option>
             <option value="3">Sionsky</option>
-            </select>
+        </select>
 
         <input type="number" id="cislo" placeholder="Číslo..." oninput="hledej()" autofocus>
         
@@ -72,46 +70,51 @@
 <script>
     let fontSize = 1.1;
 
-    // Funkce pro Dark Mode
     function toggleDarkMode() {
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
-        document.getElementById('darkBtn').innerText = isDark ? '☀️' : '🌙';
-        localStorage.setItem('darkMode', isDark); // Zapamatuje si volbu
+        const btn = document.getElementById('darkBtn');
+        if (btn) btn.innerText = isDark ? '☀️' : '🌙';
+        localStorage.setItem('darkMode', isDark);
     }
 
-    // Načtení preferencí při startu
-    if (localStorage.getItem('darkMode') === 'true') toggleDarkMode();
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        const btn = document.getElementById('darkBtn');
+        if (btn) btn.innerText = '☀️';
+    }
 
     function hledej() {
-    // .value vrací string, tak ho převedeme na číslo pomocí parseInt
-    const hledaneCislo = parseInt(document.getElementById('cislo').value);
-    const zvolenyZpevnik = parseInt(document.getElementById('songbookSelect').value);
-    
-    const panel = document.getElementById('vysledek');
-    const nazevTag = document.getElementById('nazev');
-    const textTag = document.getElementById('text');
+        const val = document.getElementById('cislo').value;
+        const hledaneCislo = parseInt(val);
+        const zvolenyZpevnik = parseInt(document.getElementById('songbookSelect').value);
+        
+        const panel = document.getElementById('vysledek');
+        const nazevTag = document.getElementById('nazev');
+        const textTag = document.getElementById('text');
 
-    // Pokud políčko prázdné, schováme panel a končíme
-    if (isNaN(hledaneCislo)) {
-        panel.style.display = 'none';
-        return;
-    }
+        if (isNaN(hledaneCislo)) {
+            panel.style.display = 'none';
+            return;
+        }
 
-    // Hledání s vynuceným porovnáním čísel
-    const pisen = seznamPisni.find(p => 
-        parseInt(p.number) === hledaneCislo && 
-        parseInt(p.idSongbook) === zvolenyZpevnik
-    );
+        if (typeof seznamPisni === 'undefined') {
+            console.error("Data nejsou načtena!");
+            return;
+        }
 
-    if (pisen) {
-        nazevTag.innerText = pisen.title;
-        textTag.innerText = pisen.text;
-        panel.style.display = 'block';
-    } else {
-        panel.style.display = 'none';
-    }
-}
+        const pisen = seznamPisni.find(p => 
+            parseInt(p.number) === hledaneCislo && 
+            parseInt(p.idSongbook) === zvolenyZpevnik
+        );
+
+        if (pisen) {
+            nazevTag.innerText = pisen.title;
+            textTag.innerText = pisen.text;
+            panel.style.display = 'block';
+        } else {
+            panel.style.display = 'none';
+        }
     }
 
     function zoom(delta) {
@@ -123,5 +126,3 @@
 
 </body>
 </html>
-
-
