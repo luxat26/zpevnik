@@ -84,20 +84,34 @@
     if (localStorage.getItem('darkMode') === 'true') toggleDarkMode();
 
     function hledej() {
-        const hledaneCislo = document.getElementById('cislo').value;
-        const zvolenyZpevnik = document.getElementById('songbookSelect').value;
-        const panel = document.getElementById('vysledek');
+    // .value vrací string, tak ho převedeme na číslo pomocí parseInt
+    const hledaneCislo = parseInt(document.getElementById('cislo').value);
+    const zvolenyZpevnik = parseInt(document.getElementById('songbookSelect').value);
+    
+    const panel = document.getElementById('vysledek');
+    const nazevTag = document.getElementById('nazev');
+    const textTag = document.getElementById('text');
 
-        // Hledání podle čísla písně A ZÁROVEŇ podle ID zpěvníku
-        const pisen = seznamPisni.find(p => p.number == hledaneCislo && p.idSongbook == zvolenyZpevnik);
+    // Pokud políčko prázdné, schováme panel a končíme
+    if (isNaN(hledaneCislo)) {
+        panel.style.display = 'none';
+        return;
+    }
 
-        if (pisen) {
-            document.getElementById('nazev').innerText = pisen.title;
-            document.getElementById('text').innerText = pisen.text;
-            panel.style.display = 'block';
-        } else {
-            panel.style.display = 'none';
-        }
+    // Hledání s vynuceným porovnáním čísel
+    const pisen = seznamPisni.find(p => 
+        parseInt(p.number) === hledaneCislo && 
+        parseInt(p.idSongbook) === zvolenyZpevnik
+    );
+
+    if (pisen) {
+        nazevTag.innerText = pisen.title;
+        textTag.innerText = pisen.text;
+        panel.style.display = 'block';
+    } else {
+        panel.style.display = 'none';
+    }
+}
     }
 
     function zoom(delta) {
@@ -109,4 +123,5 @@
 
 </body>
 </html>
+
 
