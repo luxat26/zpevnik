@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Můj Zpěvník</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; }
+        input { width: 100%; padding: 15px; font-size: 1.2rem; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        #vysledek { margin-top: 20px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: none; }
+        h2 { margin-top: 0; color: #2c3e50; }
+        pre { white-space: pre-wrap; font-size: 1.1rem; line-height: 1.5; background: #fff; }
+        .info { color: #666; font-size: 0.9rem; text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <input type="number" id="cislo" placeholder="Zadej číslo písně..." oninput="hledej()">
+    
+    <div id="vysledek">
+        <h2 id="nazev"></h2>
+        <pre id="text"></pre>
+    </div>
+    <p class="info">Zpěvník funguje offline</p>
+</div>
+
+<script src="data.js"></script>
+
+<script>
+    function hledej() {
+        const hledaneCislo = document.getElementById('cislo').value;
+        const panel = document.getElementById('vysledek');
+        const nazevTag = document.getElementById('nazev');
+        const textTag = document.getElementById('text');
+
+        // Hledání v poli seznamPisni, které je v data.js
+        const pisen = seznamPisni.find(p => p.number == hledaneCislo);
+
+        if (pisen) {
+            nazevTag.innerText = pisen.title;
+            textTag.innerText = pisen.text;
+            panel.style.display = 'block';
+        } else {
+            panel.style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>
