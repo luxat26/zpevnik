@@ -10,15 +10,17 @@
     <meta name="apple-mobile-web-app-title" content="Zpěvník">
 
     <title>Zpěvník</title>
+    
     <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png">
+
     <style>
         :root { 
             --size: 1.1rem; 
-            --bg: #f8f9fa; --card: white; --text: #1a1a1a; --border: #ced4da; --accent: #007bff;
-            --header-h: 60px;
+            --bg: #ffffff; --card: #ffffff; --text: #000000; --border: #eeeeee;
         }
         body.dark-mode { 
-            --bg: #121212; --card: #1e1e1e; --text: #f0f0f0; --border: #333; --accent: #375a7f;
+            --bg: #000000; --card: #000000; --text: #ffffff; --border: #222222;
         }
 
         body { 
@@ -27,7 +29,6 @@
             transition: background 0.2s; overflow-x: hidden;
         }
         
-        /* Fix pro Fullscreen režim a bezpečné zóny (výřez u foťáku) */
         .container { 
             max-width: 800px; margin: 0 auto; 
             padding: env(safe-area-inset-top) 10px 20px 10px; 
@@ -40,33 +41,33 @@
             border-bottom: 1px solid var(--border);
         }
 
-        select { 
-            height: 44px; width: 55px; font-size: 0.9rem; font-weight: bold;
-            border: 1px solid var(--border); border-radius: 8px; 
-            background: var(--card); color: var(--text); outline: none;
-        }
-
-        input { 
-            height: 44px; width: 65px; font-size: 1.1rem; 
-            border: 2px solid var(--accent); border-radius: 8px; 
-            outline: none; background: var(--card); color: var(--text);
+        /* Černobílé ovládací prvky */
+        select, input, button { 
+            height: 44px; font-size: 1rem; border-radius: 8px;
+            background: var(--card); color: var(--text); 
+            border: 1px solid var(--text); outline: none;
             text-align: center;
         }
+
+        select { width: 55px; font-weight: bold; border: 1px solid var(--border); }
+        input { width: 65px; border: 2px solid var(--text); } /* Silnější okraj pro input */
         
         .btn-group { display: flex; gap: 4px; }
-        
-        button { 
-            height: 44px; width: 42px; font-size: 1rem; cursor: pointer; border: none; 
-            background: var(--card); color: var(--text); border-radius: 8px; 
-            border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
-        }
+        button { width: 42px; border: 1px solid var(--border); }
+        button:active { background: var(--border); }
 
         #vysledek { 
-            margin-top: 15px; background: var(--card); padding: 20px; 
-            border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); min-height: 80vh; 
+            margin-top: 15px; background: var(--card); padding: 10px; 
+            min-height: 80vh; 
         }
         
-        h2 { margin-top: 0; font-size: 1.4rem; color: var(--accent); line-height: 1.2; }
+        /* Nadpis je nyní monochromatický */
+        h2 { 
+            margin-top: 0; font-size: 1.5rem; color: var(--text); 
+            line-height: 1.2; border-bottom: 1px solid var(--border); 
+            padding-bottom: 10px; 
+        }
+
         pre { 
             white-space: pre-wrap; font-size: var(--size); line-height: 1.6; 
             font-family: inherit; margin-top: 15px; 
@@ -74,7 +75,6 @@
 
         .error-msg { color: #ff4d4d; font-size: 0.85rem; text-align: center; padding: 5px; display: none; }
 
-        /* Odstranění šipek u čísel */
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
@@ -110,13 +110,15 @@
     function toggleDarkMode() {
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
-        document.getElementById('darkBtn').innerText = isDark ? '☀️' : '🌙';
+        const btn = document.getElementById('darkBtn');
+        if (btn) btn.innerText = isDark ? '☀️' : '🌙';
         localStorage.setItem('darkMode', isDark);
     }
 
     if (localStorage.getItem('darkMode') === 'true') {
         document.body.classList.add('dark-mode');
-        document.getElementById('darkBtn').innerText = '☀️';
+        const btn = document.getElementById('darkBtn');
+        if (btn) btn.innerText = '☀️';
     }
 
     function hledej() {
@@ -135,7 +137,6 @@
             return;
         }
 
-        // KONTROLA LIMITŮ (podle tvého požadavku)
         if ((zvolenyZpevnik === 2 && hledaneCislo > 400) || 
             (zvolenyZpevnik === 3 && hledaneCislo > 600)) {
             error.style.display = 'block';
@@ -170,4 +171,3 @@
 
 </body>
 </html>
-
