@@ -3,48 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Můj Zpěvník</title>
+    <title>Zpěvník</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; }
-        input { width: 100%; padding: 15px; font-size: 1.2rem; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-        #vysledek { margin-top: 20px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: none; }
-        h2 { margin-top: 0; color: #2c3e50; }
-        pre { white-space: pre-wrap; font-size: 1.1rem; line-height: 1.5; background: #fff; }
-        .info { color: #666; font-size: 0.9rem; text-align: center; margin-top: 10px; }
+        :root { --size: 1.1rem; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; padding: 15px; background: #fafafa; color: #222; margin: 0; }
+        .container { max-width: 700px; margin: 0 auto; }
+        
+        .header-controls { position: sticky; top: 0; background: #fafafa; padding: 10px 0; display: flex; gap: 10px; }
+        input { flex-grow: 1; padding: 12px; font-size: 1.2rem; border: 2px solid #ddd; border-radius: 10px; outline: none; }
+        input:focus { border-color: #007bff; }
+        
+        .zoom-controls { display: flex; gap: 5px; }
+        button { padding: 10px 15px; font-size: 1.2rem; cursor: pointer; border: none; background: #eee; border-radius: 8px; }
+        button:active { background: #ccc; }
+
+        #vysledek { margin-top: 20px; background: white; padding: 25px; border-radius: 15px; shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 80vh; }
+        h2 { margin-top: 0; font-size: 1.5rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; color: #000; }
+        pre { 
+            white-space: pre-wrap; 
+            font-size: var(--size); 
+            line-height: 1.6; 
+            font-family: inherit; 
+            margin-top: 15px;
+            color: #333;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <input type="number" id="cislo" placeholder="Zadej číslo písně..." oninput="hledej()">
+    <div class="header-controls">
+        <input type="number" id="cislo" placeholder="Číslo písně..." oninput="hledej()" autofocus>
+        <div class="zoom-controls">
+            <button onclick="zoom(-0.1)">A-</button>
+            <button onclick="zoom(0.1)">A+</button>
+        </div>
+    </div>
     
-    <div id="vysledek">
+    <div id="vysledek" style="display: none;">
         <h2 id="nazev"></h2>
         <pre id="text"></pre>
     </div>
-    <p class="info">Zpěvník funguje offline</p>
 </div>
 
 <script src="data.js"></script>
-
 <script>
+    let fontSize = 1.1;
+
     function hledej() {
         const hledaneCislo = document.getElementById('cislo').value;
         const panel = document.getElementById('vysledek');
-        const nazevTag = document.getElementById('nazev');
-        const textTag = document.getElementById('text');
-
-        // Hledání v poli seznamPisni, které je v data.js
         const pisen = seznamPisni.find(p => p.number == hledaneCislo);
 
         if (pisen) {
-            nazevTag.innerText = pisen.title;
-            textTag.innerText = pisen.text;
+            document.getElementById('nazev').innerText = pisen.title;
+            document.getElementById('text').innerText = pisen.text;
             panel.style.display = 'block';
+            window.scrollTo(0,0);
         } else {
             panel.style.display = 'none';
         }
+    }
+
+    function zoom(delta) {
+        fontSize += delta;
+        if (fontSize < 0.7) fontSize = 0.7;
+        if (fontSize > 2.5) fontSize = 2.5;
+        document.documentElement.style.setProperty('--size', fontSize + 'rem');
     }
 </script>
 
