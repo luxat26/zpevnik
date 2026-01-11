@@ -3,79 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" id="meta-theme-color" content="#ffffff">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="Zpěvník">
-
+    <meta name="theme-color" id="meta-theme-color" content="#ffffff">
     <title>Zpěvník</title>
-    
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon.png">
-
     <style>
-        :root { 
-            --size: 1.1rem; 
-            --bg: #ffffff; --card: #ffffff; --text: #000000; --border: #eeeeee;
-        }
-        body.dark-mode { 
-            --bg: #000000; --card: #000000; --text: #ffffff; --border: #222222;
-        }
+        :root { --size: 1.1rem; --bg: #ffffff; --card: #ffffff; --text: #000000; --border: #eeeeee; }
+        body.dark-mode { --bg: #000000; --card: #000000; --text: #ffffff; --border: #222222; }
 
-        body { 
-            font-family: -apple-system, system-ui, sans-serif; 
-            padding: 0; margin: 0; background: var(--bg); color: var(--text); 
-            transition: background 0.2s; overflow-x: hidden;
-        }
+        body { font-family: -apple-system, system-ui, sans-serif; padding: 0; margin: 0; background: var(--bg); color: var(--text); transition: background 0.2s; }
+        .container { max-width: 800px; margin: 0 auto; padding: env(safe-area-inset-top) 10px 20px 10px; }
         
-        .container { 
-            max-width: 800px; margin: 0 auto; 
-            padding: env(safe-area-inset-top) 10px 20px 10px; 
-        }
-        
+        /* LIŠTA ÚPRAVA: tlačítka k sobě, vstup doleva */
         .header-controls { 
             position: sticky; top: 0; background: var(--bg); 
             padding: 10px 5px; display: flex; align-items: center; 
-            justify-content: space-between; gap: 5px; z-index: 100;
-            border-bottom: 1px solid var(--border);
+            gap: 4px; z-index: 100; border-bottom: 1px solid var(--border);
         }
 
-        /* Černobílé ovládací prvky */
         select, input, button { 
-            height: 44px; font-size: 1rem; border-radius: 8px;
+            height: 42px; font-size: 1rem; border-radius: 8px;
             background: var(--card); color: var(--text); 
-            border: 1px solid var(--text); outline: none;
-            text-align: center;
+            border: 1px solid var(--border); outline: none; text-align: center;
         }
 
-        select { width: 55px; font-weight: bold; border: 1px solid var(--border); }
-        input { width: 65px; border: 2px solid var(--text); } /* Silnější okraj pro input */
+        select { width: 50px; font-weight: bold; }
+        input { width: 60px; border: 2px solid var(--text); margin-right: auto; } /* margin-right: auto odtlačí tlačítka doprava */
         
-        .btn-group { display: flex; gap: 4px; }
-        button { width: 42px; border: 1px solid var(--border); }
-        button:active { background: var(--border); }
+        .btn-group { display: flex; gap: 3px; }
+        button { width: 40px; }
 
-        #vysledek { 
-            margin-top: 15px; background: var(--card); padding: 10px; 
-            min-height: 80vh; 
+        #vysledek { margin-top: 15px; background: var(--card); padding: 10px; min-height: 80vh; }
+        h2 { margin-top: 0; font-size: 1.4rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        pre { white-space: pre-wrap; font-size: var(--size); line-height: 1.6; font-family: inherit; }
+
+        /* MODAL (Vyskakovací okno pro QR) */
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; 
+            width: 100%; height: 100%; background-color: rgba(0,0,0,0.8);
+            align-items: center; justify-content: center;
         }
+        .modal-content {
+            background-color: white; padding: 20px; border-radius: 15px; 
+            text-align: center; max-width: 80%; color: black;
+        }
+        .modal-content img { width: 100%; max-width: 250px; }
+        .close-btn { margin-top: 15px; padding: 10px 20px; background: #000; color: #fff; border-radius: 8px; border: none; width: 100%; }
         
-        /* Nadpis je nyní monochromatický */
-        h2 { 
-            margin-top: 0; font-size: 1.5rem; color: var(--text); 
-            line-height: 1.2; border-bottom: 1px solid var(--border); 
-            padding-bottom: 10px; 
-        }
-
-        pre { 
-            white-space: pre-wrap; font-size: var(--size); line-height: 1.6; 
-            font-family: inherit; margin-top: 15px; 
-        }
-
-        .error-msg { color: #ff4d4d; font-size: 0.85rem; text-align: center; padding: 5px; display: none; }
-
+        .error-msg { color: #ff4d4d; font-size: 0.8rem; text-align: center; display: none; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
@@ -94,13 +70,24 @@
             <button onclick="zoom(-0.1)">A-</button>
             <button onclick="zoom(0.1)">A+</button>
             <button onclick="toggleDarkMode()" id="darkBtn">🌙</button>
+            <button onclick="toggleModal()">🔗</button>
         </div>
     </div>
-    <div id="limitError" class="error-msg">Maximální číslo: ZH=400, S=600</div>
+    
+    <div id="limitError" class="error-msg">Max: ZH=400, S=600</div>
     
     <div id="vysledek" style="display: none;">
         <h2 id="nazev"></h2>
         <pre id="text"></pre>
+    </div>
+</div>
+
+<div id="qrModal" class="modal" onclick="toggleModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h3 style="margin-top:0">Sdílet zpěvník</h3>
+        <img src="qrz" alt="QR kód">
+        <p style="font-size: 0.9rem;">Naskenuj pro otevření webu</p>
+        <button class="close-btn" onclick="toggleModal()">Zavřít</button>
     </div>
 </div>
 
@@ -109,54 +96,45 @@
     let fontSize = 1.1;
 
     function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
-    
-    // Tohle změní barvu horní lišty systému (hodiny, signál)
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-    if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', isDark ? '#000000' : '#ffffff');
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        document.getElementById('darkBtn').innerText = isDark ? '☀️' : '🌙';
+        const metaThemeColor = document.getElementById('meta-theme-color');
+        if (metaThemeColor) metaThemeColor.setAttribute('content', isDark ? '#000000' : '#ffffff');
+        localStorage.setItem('darkMode', isDark);
     }
-    
-    document.getElementById('darkBtn').innerText = isDark ? '☀️' : '🌙';
-    localStorage.setItem('darkMode', isDark);
+
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('darkBtn').innerText = '☀️';
+        document.getElementById('meta-theme-color').setAttribute('content', '#000000');
+    }
+
+    function toggleModal() {
+        const modal = document.getElementById('qrModal');
+        modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
     }
 
     function hledej() {
         const inputEl = document.getElementById('cislo');
-        const val = inputEl.value;
-        const hledaneCislo = parseInt(val);
+        const hledaneCislo = parseInt(inputEl.value);
         const zvolenyZpevnik = parseInt(document.getElementById('songbookSelect').value);
-        
         const panel = document.getElementById('vysledek');
         const error = document.getElementById('limitError');
 
         error.style.display = 'none';
+        if (isNaN(hledaneCislo)) { panel.style.display = 'none'; return; }
 
-        if (isNaN(hledaneCislo)) {
-            panel.style.display = 'none';
-            return;
+        if ((zvolenyZpevnik === 2 && hledaneCislo > 400) || (zvolenyZpevnik === 3 && hledaneCislo > 600)) {
+            error.style.display = 'block'; panel.style.display = 'none'; return;
         }
 
-        if ((zvolenyZpevnik === 2 && hledaneCislo > 400) || 
-            (zvolenyZpevnik === 3 && hledaneCislo > 600)) {
-            error.style.display = 'block';
-            panel.style.display = 'none';
-            return;
-        }
-
-        const pisen = seznamPisni.find(p => 
-            parseInt(p.number) === hledaneCislo && 
-            parseInt(p.idSongbook) === zvolenyZpevnik
-        );
-
+        const pisen = seznamPisni.find(p => parseInt(p.number) === hledaneCislo && parseInt(p.idSongbook) === zvolenyZpevnik);
         if (pisen) {
             document.getElementById('nazev').innerText = pisen.title;
             document.getElementById('text').innerText = pisen.text;
             panel.style.display = 'block';
-        } else {
-            panel.style.display = 'none';
-        }
+        } else { panel.style.display = 'none'; }
     }
 
     function zoom(delta) {
@@ -165,12 +143,8 @@
         document.documentElement.style.setProperty('--size', fontSize + 'rem');
     }
 
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 </script>
 
 </body>
 </html>
-
-
